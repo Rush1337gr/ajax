@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+    <body>
+        <form action="" method="GET" id="form">
+            <input type="text" name="heading">
+            <input type="text" name="name">
+            <textarea name="message">
+            </textarea>
+
+            <input type="submit">
+        </form>
+        <table id="table">
+            <tr>
+                <th>heading</th>
+                <th>name</th>
+                <th>message</th>
+            </tr>
+        </table>
+    </body>
+    <script>
+
+        let form = document.getElementById('form');
+
+        form.addEventListener('submit', function(event){
+            let formData = new FormData(this);
+
+            let promise = fetch('additionPost.php', {
+                method: 'POST',
+                body: formData,
+            });
+
+            promise.then(
+                response => {
+                    return response.text();
+                }
+            ).then(
+                text => {
+                    alert(text);
+                    let tr = document.getElementById('table')
+                    let td = tr.children[0];
+                    td.insertAdjacentHTML("beforeEnd", "<tr><td>"+ formData.get("heading")+"</td><td>"+ formData.get("name")+"</td><td>"+ formData.get("message")+"</td></tr>");
+                }
+            );
+
+            event.preventDefault();
+        });
+
+        document.addEventListener('DOMContentLoaded', (event)  => {
+            let promise = fetch('getPost.php');
+
+            promise.then(
+                response => {
+                    return response.json();
+                }
+            ).then(
+                posts => {
+                    for (let index = 0; index < posts.length;index++) {
+                        let tr = document.getElementById('table')
+                        let td = tr.children[0];
+                        td.insertAdjacentHTML("beforeEnd", "<tr><td>"+posts[index].heading+"</td><td>"+posts[index].name+"</td><td>"+posts[index].message+"</td></tr>");
+                    }
+                }
+            );
+            event.preventDefault();
+        });
+
+    </script>
+</html>
